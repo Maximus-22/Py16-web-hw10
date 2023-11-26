@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "py16-web-hw10"
+version = "0.1.0"
+description = ""
+authors = ["Maximus-22 <maksim.melnichenko@nservice.com.ua>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+django = "^4.2.7"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
