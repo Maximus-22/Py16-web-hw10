@@ -22,9 +22,9 @@
             </div>
             <div class="col-md-4">
                 <p>
-                    <a href="/login" class="btn btn-primary">SignUp </a>
-                    <a href="/login" class="btn btn-primary">Login</a>
-                    <a href="/login" class="btn btn-primary">Logout</a>
+                    <a href="{% url 'users:logout' %}" class="btn btn-primary">Logout</a>
+                    <a href="{% url 'users:login' %}" class="btn btn-primary">Login</a>
+                    <a href="{% url 'users:signup' %}" class="btn btn-primary">SignUp</a>
                 </p>
             </div>
         </div>
