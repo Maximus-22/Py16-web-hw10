@@ -12,16 +12,20 @@
         <span class="text" itemprop="text">
             {{quote.quote}}
         </span>
-        <span>by <small class="author" itemprop="author">{{quote.author|author}}</small>
-        <a href="/author/{{quote.author}}">(about)</a>
+
+        <span>
+            by <small class="author" itemprop="author">{{ quote.author|author }}</small>
+            <a href="{% url 'quotes:author_detail' author_id=quote.author.id %}" target="_self">(about)</a>
         </span>
+        
         <div class="tags">
             Tags:
-            <meta class="keywords" itemprop="keywords" content="change,deep-thoughts,thinking,world"> 
-            {% for tag in quote.tags %}
-            <a class="tag" href="/tag/{{tag}}">{{tag}}</a>
+            <meta class="keywords" itemprop="keywords" content="{% for tag in quote.tags.all %}{{ tag.name }},{% endfor %}">
+            {% for tag in quote.tags.all %}
+                <a class="tag" href="/tag/{{ tag.name }}">{{ tag.name }}</a>
             {% endfor %}
         </div>
+
     </div>
     
     {% endfor %}
