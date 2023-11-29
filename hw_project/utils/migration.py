@@ -13,13 +13,13 @@ from quotes.models import Author, Quote, Tag
 # py -m utils.migration
 
 
-client = MongoClient("mongodb+srv://maximusm_22:123qweasd@cluster0.aemcehc.mongodb.net/")
+client = MongoClient("mongodb+srv://maximusm_22:<password>@cluster0.aemcehc.mongodb.net/")
 # client = MongoClient("mongodb://localhost")
 db = client["BD-homework"]
 
-# authors = db.authors.find()
+# authors_db = db.authors.find()
 
-# for author in authors:
+# for author in authors_db:
 #     Author.objects.get_or_create(
 #         fullname = author["fullname"],
 #         born_date = author["born_date"],
@@ -45,8 +45,7 @@ for quote in quotes:
         author = db.authors.find_one({"_id": quote["author"]})
         # тепер певний автор спiвставляється по <fullname> з database SQL
         a = Author.objects.get(fullname=author["fullname"])
-        q = Quote.objects.create(quote=quote["quote"],
-                                 author = a)
+        q = Quote.objects.create(quote=quote["quote"], author = a, user_id=None)
         
         for tag in tags:
             q.tags.add(tag)

@@ -119,6 +119,11 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+# Куди перенаправляти, коли користувач залогинiвся
+LOGIN_REDIRECT_URL = "/"
+# Куди перенаправляти, коли користувач лiзе кудись не туди
+LOGIN_URL = "/"
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
