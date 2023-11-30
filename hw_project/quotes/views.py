@@ -1,9 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 
 
-from .forms import QuoteForm, AuthorForm
+from .forms import QuoteForm, AuthorForm, AuthorEditForm
 from .models import Author, Quote, Tag
 
 # # Цей блок працював на claud-MongoDB
@@ -43,7 +44,9 @@ def add_quote(request):
         author_form = AuthorForm(request.POST)
         if quote_form.is_valid() and author_form.is_valid():
             # Обробка автора
-            author = author_form.save()
+            author = author_form.save(commit=False)
+            author.user = request.user
+            author.save()
 
             # Обробка цитати
             quote = quote_form.save(commit=False)
@@ -75,3 +78,34 @@ def add_quote(request):
         author_form = AuthorForm()
     
     return render(request, 'quotes/add_quote.html', {'quote_form': quote_form, 'author_form': author_form})
+
+
+@login_required
+def edit_author(request, author_id):
+    author = get_object_or_404(Author, id=author_id)
+    
+    # Перевіряємо, що поточний користувач створював автора
+    if request.user.id != author.user.id:
+        # Якщо не є, виконуємо перенаправлення
+        return redirect(to='quotes:root')
+    
+    if request.method == 'POST':
+        form = AuthorEditForm(request.POST, instance=author)
+        if form.is_valid():
+            form.save()
+            return redirect(to='quotes:author_detail', author_id=author_id)
+    else:
+        form = AuthorEditForm(instance=author)
+    # тут у словнику [context], ключ - це є сигнатура, яка використовуватиметься в html шаблоні
+    return render(request, 'quotes/edit_author.html', {'form': form, 'author': author})
+
+
+@login_required
+def delete_quote(request, quote_id):
+    quote = get_object_or_404(Quote, id=quote_id)
+    
+    if request.user.is_authenticated and quote.user == request.user:
+        quote.delete()
+        return JsonResponse({'message': 'Your Quote was deleted successfully.'})
+    else:
+        return JsonResponse({'message': 'Your access was not authorized or Quote does not exist.'}, status=401)

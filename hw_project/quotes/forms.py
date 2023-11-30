@@ -26,3 +26,12 @@ class AuthorForm(forms.ModelForm):
     class Meta:
         model = Author
         fields = ['fullname']
+
+
+class AuthorEditForm(forms.ModelForm):
+    born_date = forms.CharField(max_length=64, help_text="Please follow the format: December 25, 2000.")
+    born_location = forms.CharField(max_length=256, help_text="Please follow the format: in Florida, USA.")
+
+    class Meta:
+        model = Author
+        fields = ['born_date', 'born_location', 'description']

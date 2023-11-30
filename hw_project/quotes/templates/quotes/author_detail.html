@@ -12,6 +12,13 @@
     <div class="author-description me-5">
         {{ author.description }}
     </div>
+    
+    {% if user.is_authenticated and user.id == author.user.id %}
+    <div class="d-flex justify-content-start">
+        <a href="{% url 'quotes:edit_author' author.id %}" class="btn btn-primary me-2">Edit</a>
+    </div>
+    {% endif %}
+      
 </div>
 
 {% endblock %}

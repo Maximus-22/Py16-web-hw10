@@ -7,6 +7,7 @@ class Author(models.Model):
     born_date = models.CharField(max_length=64)
     born_location = models.CharField(max_length=256)
     description = models.TextField()
+    user = models.ForeignKey(User, on_delete=models.CASCADE, default=None, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
 
