@@ -42,11 +42,25 @@ def add_quote(request):
     if request.method == 'POST':
         quote_form = QuoteForm(request.POST)
         author_form = AuthorForm(request.POST)
-        if quote_form.is_valid() and author_form.is_valid():
+        # if quote_form.is_valid() and author_form.is_valid():
+        if quote_form.is_valid():
             # Обробка автора
-            author = author_form.save(commit=False)
-            author.user = request.user
-            author.save()
+            # author_name = author_form.cleaned_data['fullname']
+            author_name = request.POST.get('fullname')
+            print(f"Author Fullname: {author_name}")
+            print(f"Quote Form Data: {quote_form.cleaned_data}")
+            try:
+                # Якщо автор вже існує, тягнемо його дані, щоб прокинути id його створювача
+                author = Author.objects.get(fullname=author_name)
+                # author.save()
+            except Author.DoesNotExist:
+                # Якщо автора не існує, створюємо нового
+                author = author_form.save(commit=False)
+                author.user = request.user
+                author.save()
+            print(f"Author ID: {author.id}")
+            print(f"Author User ID: {author.user_id}")
+            print(f"Request User ID: {request.user.id}")
 
             # Обробка цитати
             quote = quote_form.save(commit=False)
@@ -103,9 +117,16 @@ def edit_author(request, author_id):
 @login_required
 def delete_quote(request, quote_id):
     quote = get_object_or_404(Quote, id=quote_id)
-    
     if request.user.is_authenticated and quote.user == request.user:
+        author = quote.author
         quote.delete()
+        
+        # Перевіряємо, чи є ще цитати автора
+        if Quote.objects.filter(author=author).count() == 0:
+            # Отримуємо об'єкт автора за його ID та видаляємо його
+            author_to_delete = Author.objects.get(id=author.id)
+            author_to_delete.delete()
+
         return JsonResponse({'message': 'Your Quote was deleted successfully.'})
     else:
         return JsonResponse({'message': 'Your access was not authorized or Quote does not exist.'}, status=401)
