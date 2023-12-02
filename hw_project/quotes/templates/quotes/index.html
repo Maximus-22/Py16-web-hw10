@@ -14,7 +14,7 @@
             <span style="float: right;">
                 {% if user.is_authenticated and quote.user == user %}
                 <button class="delete-button" data-quote-id="{{ quote.id }}">DELETE</button>
-            {% endif %}
+                {% endif %}
             </span>
         </span>
         
@@ -27,7 +27,7 @@
             Tags:
             <meta class="keywords" itemprop="keywords" content="{% for tag in quote.tags.all %}{{ tag.name }},{% endfor %}">
             {% for tag in quote.tags.all %}
-                <a class="tag" href="/tag/{{ tag.name }}">{{ tag.name }}</a>
+                <a class="tag" href="{% url 'quotes:tag_quotes' tag_name=tag.name %}">{{ tag.name }}</a>
             {% endfor %}
         </div>
 
@@ -38,13 +38,13 @@
     <nav>
         <ul class="pager">
            
-            <li class="previous" class="btn btn-light">
+            <li class="previous" class="btn btn-secondary">
                 <a class="{% if not quotes.has_previous %} disabled {% endif %}"
                 href="{% if quotes.has_previous %} {% url 'quotes:root_paginate' quotes.previous_page_number %} {% else %} # {% endif %}">
                     <span aria-hidden="true">←</span> Previous</a>
             </li>
                     
-            <li class="next" class="btn btn-light">
+            <li class="next" class="btn btn-secondary">
                 <a class="{% if not quotes.has_next %} disabled {% endif %}"
                 href="{% if quotes.has_next %} {% url 'quotes:root_paginate' quotes.next_page_number %} {% else %} # {% endif %}">
                 Next <span aria-hidden="true">→</span></a>

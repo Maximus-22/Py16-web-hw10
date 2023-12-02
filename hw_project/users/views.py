@@ -1,3 +1,5 @@
+from typing import Any
+from django import http
 from django.shortcuts import render, redirect
 from django.views import View
 from django.contrib import messages
@@ -8,6 +10,11 @@ from .forms import RegisterForm
 class RegisterView(View):
     template_name = "users/register.html"
     form_class = RegisterForm
+
+    def dispatch(self, request, *args: Any, **kwargs: Any):
+        if request.user.is_authenticated:
+            return redirect(to="quotes:root")
+        return super().dispatch(request, *args, **kwargs)
 
     def get(self, request):
         return render(request, self.template_name, context={"form": self.form_class})

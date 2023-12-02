@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.core.paginator import Paginator
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
+from django.views import View
 
 
 from .forms import QuoteForm, AuthorForm, AuthorEditForm
@@ -130,3 +131,31 @@ def delete_quote(request, quote_id):
         return JsonResponse({'message': 'Your Quote was deleted successfully.'})
     else:
         return JsonResponse({'message': 'Your access was not authorized or Quote does not exist.'}, status=401)
+    
+
+class TagQuotesView(View):
+    template_name = 'quotes/tag_quotes.html'
+    quotes_per_page = 10
+
+    def get(self, request, *args, **kwargs):
+        # Тут ключ ['tag_name'] тому, що у файлi urls.py заданий шлях <str:tag_name>
+        tag_name = kwargs['tag_name']
+        tag = Tag.objects.get(name=tag_name)
+        quotes_with_tag = Quote.objects.filter(tags=tag)
+
+        paginator = Paginator(list(quotes_with_tag), self.quotes_per_page)
+        page = request.GET.get('page')
+
+        try:
+            quotes_per_page = paginator.page(page)
+        except PageNotAnInteger:
+            quotes_per_page = paginator.page(1)
+        except EmptyPage:
+            quotes_per_page = paginator.page(paginator.num_pages)
+
+        context = {
+            'tag_name': tag_name,
+            'quotes_with_tag': quotes_per_page,
+        }
+
+        return render(request, self.template_name, context)
