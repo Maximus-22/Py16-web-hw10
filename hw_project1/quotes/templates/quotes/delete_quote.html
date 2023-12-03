@@ -1,0 +1,32 @@
+{% extends 'quotes/base.html' %}
+
+{% block content %}
+
+<div class="author-details" style="margin-left: 10%;">
+  <h2 class="author-title" style="margin-left: 5%;">Видалити цитату</h2>
+  <form method="post" action="{% url 'quotes:delete_quote' quote.id %}">
+    {% csrf_token %}
+    {{ form.confirm_delete }}
+    <div class="quote" style="margin-right: 15%;" itemscope="" itemtype="http://schema.org/CreativeWork">
+        <span class="text" style="margin-left: auto; margin-right: 15%;" itemprop="text">
+            {{quote.quote}}
+        </span>
+        <div class="d-flex justify-content-start mb-3">
+            <div class="quote ms-5 mt-3">
+                <span class="text" itemprop="text">
+                    <p><strong> Ви впевнені, що хочете видалити цю цитату?</strong></p>
+                </span>
+            </div>
+            <div class="col-md-4" style="margin-left: 3%; margin-top: 3%;">
+                <p>
+                    <button type="submit" class="btn btn-danger me-4">Confirm</button>
+                    <a href="{{ request.META.HTTP_REFERER|default:'{% url "quotes:root_paginate" %}' }}"
+                        class="btn btn-secondary">Don't do it</a>
+                </p>
+            </div>
+        </div>
+    </div>
+  </form>
+</div>
+
+{% endblock %}
