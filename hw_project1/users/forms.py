@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from django.forms import CharField, EmailField, EmailInput, TextInput, PasswordInput
+from django.forms import CharField, EmailField, EmailInput, TextInput, PasswordInput, ValidationError
 
 
 class RegisterForm(UserCreationForm):
@@ -12,6 +12,18 @@ class RegisterForm(UserCreationForm):
     class Meta:
         model = User
         fields = ("username", "email", "password1", "password2")
+
+    def unique_email(self):
+        email = self.cleaned_data['email']
+        if User.objects.filter(email=email).exists():
+            raise ValidationError('This email address is already registered.')
+        return email
+    
+    def unique_username(self):
+        username = self.cleaned_data['username']
+        if User.objects.filter(username=username).exists():
+            raise ValidationError('This login for user is already in used.')
+        return username
 
 
 class LoginForm(AuthenticationForm):
