@@ -103,13 +103,13 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Налаштування для надсилання електронних листів
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'mail.rusanovka-net.kiev.ua'
-EMAIL_PORT = 25
-EMAIL_USE_SSL = False
-EMAIL_HOST_USER = 'app.systems@rusanovka-net.kiev.ua'
-EMAIL_HOST_PASSWORD = '123Qwe'
-DEFAULT_FROM_EMAIL = 'app.systems@rusanovka-net.kiev.ua'
-SERVER_EMAIL = 'app.systems@rusanovka-net.kiev.ua'
+EMAIL_HOST = 
+EMAIL_PORT = 
+EMAIL_USE_SSL = 
+EMAIL_HOST_USER = 
+EMAIL_HOST_PASSWORD = 
+DEFAULT_FROM_EMAIL = 
+SERVER_EMAIL = 
 USE_CREDENTIALS=True
 VALIDATE_CERTS=True
 
