@@ -1,15 +1,16 @@
 from typing import Any
-from django import http
+from django.http import HttpRequest, HttpResponseBadRequest
 from django.shortcuts import render, redirect, resolve_url
 from django.views import View
 from django.contrib import messages
 from django.urls import reverse_lazy
+from django.contrib.auth import get_user_model
 from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView
-from django.contrib.auth.forms import PasswordResetForm
 from django.contrib.auth.models import User
-# from django.views.generic.edit import FormView
+from django.contrib.auth.tokens import default_token_generator
 
-from .forms import RegisterForm
+
+from .forms import RegisterForm, PatrolSetPasswordForm
 
 
 class RegisterView(View):
@@ -37,7 +38,7 @@ class RegisterView(View):
         return render(request, self.template_name, context={"form": form})
 
 
-class CustomPasswordResetView(PasswordResetView):
+class PatrolPasswordResetView(PasswordResetView):
     template_name = "users/registration/password_reset_form.html"
     email_template_name = "users/registration/password_reset_email.html"
     subject_template_name = "users/registration/password_reset_subject.txt"
@@ -55,9 +56,48 @@ class CustomPasswordResetView(PasswordResetView):
         
         return super().form_valid(form)
     
+    # def form_valid(self, form):
+    #     print("Form was submitted")
+    #     return super().form_valid(form)
+    
     def get_success_url(self):
         return resolve_url(self.success_url)
 
 
-class CustomPasswordResetConfirmView(PasswordResetConfirmView):
+UserModel = get_user_model()
+
+class ChangeUserPasswordView(View):
     template_name = "users/registration/password_reset_confirm.html"
+    success_url=reverse_lazy("users:password_reset_complete")
+    form_class = PatrolSetPasswordForm
+
+    def get(self, request, uidb64, token, *args, **kwargs):
+        try:
+            user = UserModel._default_manager.get(pk=uidb64)
+        except UserModel.DoesNotExist:
+            user = None
+
+        if user is not None and default_token_generator.check_token(user, token):
+            form = self.form_class(user)
+            return render(request, self.template_name, {'form': form})
+        else:
+            return HttpResponseBadRequest('Wrong credentials')
+
+    def post(self, request, uidb64, token, *args, **kwargs):
+        try:
+            user = UserModel._default_manager.get(pk=uidb64)
+        except UserModel.DoesNotExist:
+            user = None
+
+        if user is not None and default_token_generator.check_token(user, token):
+            form = self.form_class(user, request.POST)
+            if form.is_valid():
+                form.save()
+                return redirect(self.get_success_url())
+            else:
+                return render(request, self.template_name, {'form': form})
+        else:
+            return HttpResponseBadRequest('Wrong credentials')
+
+    def get_success_url(self):
+        return resolve_url(self.success_url)
